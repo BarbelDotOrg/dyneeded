@@ -4,13 +4,22 @@ version = "0.2.0"
 edition = "2024"
 repository = "https://github.com/barbeldotorg/dyneeded"
 authors = ["Barbel"]
-license = "AGPL-3"
-license-file = "LICENSE"
+
+[package.metadata.wix]
+upgrade-guid = "79AEFAC8-051C-43B6-8098-78F479ABE955"
+path-guid = "4F3A5FA1-FBE4-4499-BEA5-E045C67D5C32"
+license = false
+eula = false
 
 [profile.release]
 opt-level = 3
 codegen-units = 1
 strip = true
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
 
 [dependencies]
 clap = {version = "=4.6.6", features = ["derive"]}
@@ -21,24 +30,3 @@ ron = "=0.12.2"
 termtree = "=1.0.0"
 anyhow = "=1.0.104"
 comfy-table = "=8.0.0"
-
-[package.metadata.deb]
-maintainer = "Barbel <barbel@barbel.org>"       # <- update
-copyright = "2026, Barbel"
-license-file = ["LICENSE", "0"]                # <- add a LICENSE file if you don't have one
-extended-description = """\
-dyneeded inspects a binary's dynamic dependencies and reports what it \
-actually needs at runtime."""
-section = "utils"
-priority = "optional"
-depends = "$auto"
-assets = [
-    ["target/release/dyneeded", "usr/bin/", "755"],
-    ["README.md", "usr/share/doc/dyneeded/README", "644"],
-]
-
-[package.metadata.generate-rpm]
-assets = [
-    { source = "target/release/dyneeded", dest = "/usr/bin/dyneeded", mode = "755" },
-    { source = "README.md", dest = "/usr/share/doc/dyneeded/README", mode = "644", doc = true },
-]
