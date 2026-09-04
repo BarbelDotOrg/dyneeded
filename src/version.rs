@@ -4,7 +4,9 @@ pub fn version_requirements(elf: &lief::elf::Binary) -> HashMap<String, Vec<Stri
     let mut map: HashMap<String, Vec<String>> = HashMap::new();
     for req in elf.symbols_version_requirement() {
         let versions = req.auxiliary_symbols().map(|aux| aux.name().to_string());
-        map.entry(req.name().to_string()).or_default().extend(versions);
+        map.entry(req.name().to_string())
+            .or_default()
+            .extend(versions);
     }
     map
 }

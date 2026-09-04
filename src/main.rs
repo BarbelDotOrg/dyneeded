@@ -1,12 +1,10 @@
-pub mod serialize;
 pub mod dependency;
-pub mod result;
+pub mod serialize;
 pub mod version;
 
-use std::path::PathBuf;
-use clap::Parser;
-use lief::Binary;
 use crate::dependency::Dependency;
+use clap::Parser;
+use std::path::PathBuf;
 
 fn validate_file_exists(s: &str) -> Result<PathBuf, String> {
     let path = PathBuf::from(s);
