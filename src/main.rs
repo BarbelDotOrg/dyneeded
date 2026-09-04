@@ -1,8 +1,12 @@
-pub mod analysis;
+pub mod serialize;
+pub mod dependency;
+pub mod result;
+pub mod version;
 
 use std::path::PathBuf;
 use clap::Parser;
 use lief::Binary;
+use crate::dependency::Dependency;
 
 fn validate_file_exists(s: &str) -> Result<PathBuf, String> {
     let path = PathBuf::from(s);
@@ -14,10 +18,11 @@ fn validate_file_exists(s: &str) -> Result<PathBuf, String> {
 }
 
 #[derive(Debug, Clone, clap::ValueEnum)]
-enum OutputFormat {
+pub enum OutputFormat {
     Ldd,
     Text,
     Json,
+    Ron,
     Tree,
 }
 
@@ -30,6 +35,9 @@ struct Args {
     format: OutputFormat,
 }
 
-fn main() {
+fn main() -> anyhow::Result<()> {
     let args = Args::parse();
+    let tree = Dependency::from_file(&args.file)?;
+    println!("{}", tree.serialize(args.format)?);
+    Ok(())
 }
