@@ -1,5 +1,6 @@
 use crate::dependency::Dependency;
 use comfy_table::{Cell, Color as TableColor, ContentArrangement, Table};
+use comfy_table::presets::{UTF8_FULL, UTF8_FULL_CONDENSED};
 use owo_colors::{OwoColorize, Stream::Stdout, Style};
 use termtree::Tree;
 
@@ -43,6 +44,7 @@ impl Dependency {
     fn serialize_text(&self) -> String {
         let mut table = Table::new();
         table
+            .load_style(UTF8_FULL_CONDENSED)
             .set_content_arrangement(ContentArrangement::Dynamic)
             .set_header(vec!["Dependency", "Version", "Path"]);
 
