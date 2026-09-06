@@ -35,5 +35,5 @@ ron = "=0.12.2"
 termtree = "=1.0.0"
 anyhow = "=1.0.104"
 comfy-table = "=8.0.0"
-owo-colors = {version = "=4.0.0", features = ["supports-colors"]}
+owo-colors = {version = "=4.4.0", features = ["supports-colors"]}
 fastrand = "=2.5.0"
