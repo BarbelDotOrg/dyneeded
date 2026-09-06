@@ -2,6 +2,7 @@ pub mod bible;
 pub mod dependency;
 pub mod serialize;
 pub mod version;
+pub mod resolve;
 
 use crate::bible::random_bible_passage;
 use crate::dependency::Dependency;

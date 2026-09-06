@@ -4,6 +4,7 @@ use lief::Binary;
 use serde::Serialize;
 use std::collections::HashMap;
 use std::path::PathBuf;
+use crate::resolve::{resolve_library};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct Dependency {
@@ -24,7 +25,7 @@ impl Dependency {
 
         // (lib_name, version) pairs
         let lib_entries: Vec<(String, Option<String>)> = match binary {
-            Binary::ELF(elf) => {
+            Binary::ELF(ref elf) => {
                 let versions = version_requirements(&elf);
                 elf.dynamic_entries()
                     .filter_map(|entry| match entry {
@@ -37,7 +38,7 @@ impl Dependency {
                     })
                     .collect()
             }
-            Binary::PE(pe) => {
+            Binary::PE(ref pe) => {
                 let mut seen = HashMap::new();
                 for imp in pe.imports() {
                     let name = imp.name().to_string();
@@ -46,7 +47,7 @@ impl Dependency {
                 }
                 seen.into_values().map(|name| (name, None)).collect()
             }
-            Binary::MachO(fat) => {
+            Binary::MachO(ref fat) => {
                 let macho = fat.iter().next().context("empty Mach-O FAT container")?;
                 macho
                     .libraries()
@@ -72,18 +73,18 @@ impl Dependency {
         seen.push(canonical);
 
         let mut deps = Vec::with_capacity(lib_entries.len());
-        for (lib_name, _version) in lib_entries {
-            let dep = match resolve_library(&lib_name, path) {
+        for (lib_name, version) in lib_entries {
+            let dep = match resolve_library(&lib_name, path, &binary) {
                 Some(resolved) => {
                     let mut d = Self::from_file_inner(&resolved, seen)?;
-                    d.version = pe_file_version(&resolved).or(d.version);
+                    d.version = pe_file_version(&resolved).or(version).or(d.version);
                     d
                 }
                 None => Dependency {
                     name: lib_name,
                     deps: vec![],
                     path: None,
-                    version: None,
+                    version,
                 },
             };
             deps.push(dep);
@@ -103,36 +104,6 @@ fn path_name(path: &PathBuf) -> String {
         .map(|n| n.to_string_lossy().into_owned())
         .unwrap_or_default()
 }
-
-/// Resolve a bare library name (e.g. "libc.so.6") to an actual path on disk,
-/// the way a real loader would (search paths, rpath, etc).
-fn resolve_library(name: &str, _requesting_binary: &PathBuf) -> Option<PathBuf> {
-    // Placeholder: real impl should check rpath/runpath from the ELF
-    // dynamic entries, LD_LIBRARY_PATH, then standard dirs like
-    // /lib, /usr/lib, /lib64, etc. (or PATH / System32 for PE).
-    for dir in ["/lib", "/lib64", "/usr/lib", "/usr/lib64"] {
-        let candidate = PathBuf::from(dir).join(name);
-        if candidate.is_file() {
-            return Some(candidate);
-        }
-    }
-    None
-}
-
 fn pe_file_version(path: &PathBuf) -> Option<String> {
-    let binary = Binary::parse(path)?;
-    let Binary::PE(pe) = binary else { return None };
-    let resources = pe.resources_manager()?;
-    let version = resources.version().next()?; // <-- was the bug: .next() on the iterator
-
-    // The current LIEF (0.17+/1.0) API replaced the old has_fixed_file_info()/
-    // fixed_file_info() pair with a non-optional file_info() accessor.
-    let info = version.file_info();
-    Some(format!(
-        "{}.{}.{}.{}",
-        info.file_version_ms >> 16,
-        info.file_version_ms & 0xFFFF,
-        info.file_version_ls >> 16,
-        info.file_version_ls & 0xFFFF,
-    ))
+    None // TODO real implementation
 }
