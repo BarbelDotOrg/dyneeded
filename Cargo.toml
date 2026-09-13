@@ -6,6 +6,7 @@ edition = "2024"
 repository = "https://github.com/barbeldotorg/dyneeded"
 homepage = "https://github.com/barbeldotorg/dyneeded"
 authors = ["Barbel"]
+license = "AGPL-3"
 
 [package.metadata.wix]
 upgrade-guid = "79AEFAC8-051C-43B6-8098-78F479ABE955"
