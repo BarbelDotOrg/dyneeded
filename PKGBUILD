@@ -9,7 +9,7 @@ license=('AGPL-3')
 depends=('gcc-libs')
 makedepends=('cargo')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('b4c3e8e05f2affd1ca5c28fa0b51c12a18518f97e57ec08eab327c1a43897124')
+sha256sums=('b0ac41567382de7442ba65e6d839da3023dac82e1f65ec99b13a78bf83d4a60e')
 
 prepare() {
     cd "$pkgname-$pkgver"
