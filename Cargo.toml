@@ -1,7 +1,7 @@
 [package]
 name = "dyneeded"
 description = "A better, fancier, cross platform LDD"
-version = "0.5.2"
+version = "0.5.3"
 edition = "2024"
 repository = "https://github.com/barbeldotorg/dyneeded"
 homepage = "https://github.com/barbeldotorg/dyneeded"
