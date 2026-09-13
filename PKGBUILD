@@ -1,6 +1,6 @@
 # Maintainer: Barbel <barbel@barbel.org>
 pkgname=dyneeded
-pkgver=0.5.0
+pkgver=0.5.1
 pkgrel=1
 pkgdesc="A better, fancier, cross platform LDD"
 arch=('x86_64' 'aarch64')
